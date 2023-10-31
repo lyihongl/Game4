@@ -8,36 +8,66 @@ INC = 	-IC:\Dev\glm\glm -IC:\Dev\glad\include \
 		-LC:\Dev\glew-2.1.0\lib\Release\x64 \
 		-IC:\Dev\inc
 
+
 CXX = g++
-CPPFLAGS = -std=c++17
+CXXFLAGS = -std=c++17
 
 SRC_DIR = .
 INC_DIR = ./inc
-OBJ_DIR = ./obj
 
 SRCS = $(wildcard $(SRC_DIR)/*.cpp)
-OBJS = $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRCS))
-OBJS += obj/glad.o
+OBJS = $(patsubst $(SRC_DIR)/%.cpp, %.o, $(SRCS))
+OBJS += glad.o
 
-TARGET = Game4.exe
+RELEASE_OBJ_DIR = ./obj/release
+RELEASE_OBJ = $(addprefix $(RELEASE_OBJ_DIR)/, $(OBJS))
+RELEASE_FLAGS = -O3 -DNDEBUG
+
+DEBUG_OBJ_DIR = ./obj/debug
+DEBUG_OBJ = $(addprefix $(DEBUG_OBJ_DIR)/, $(OBJS))
+DEBUG_FLAGS = -g -O0 -DDEBUG
+
+OUT_DIR = ./output
+
+TARGET = $(OUT_DIR)/Game4.exe
+TARGET_DEBUG = $(OUT_DIR)/Game4Debug.exe
+
+
+
+
 
 all: $(TARGET)
 
-$(TARGET): $(OBJS)
-	$(CXX) $(CPPFLAGS) $^ -o $@ $(INC) $(LIBS) 
+debug: $(TARGET_DEBUG)
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+$(TARGET): $(RELEASE_OBJ)
+	$(CXX) $(RELEASE_FLAGS) $^ -o $@ $(INC) $(LIBS) 
 
-$(OBJ_DIR)/main.o: $(SRC_DIR)/main.cpp
-	$(CXX) $(CXXFLAGS) $(INC) -c $< -o $@
+$(RELEASE_OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
+	$(CXX) $(RELEASE_FLAGS) -c $< -o $@
 
-$(OBJ_DIR)/glad.o: C:\\Dev\\glad\\src\\glad.c
-	g++ -c C:\Dev\glad\src\glad.c -IC:\Dev\glad\include -o ./obj/glad.o
+$(RELEASE_OBJ_DIR)/main.o: $(SRC_DIR)/main.cpp
+	$(CXX) $(RELEASE_FLAGS) $(INC) -c $< -o $@
+
+$(RELEASE_OBJ_DIR)/glad.o: C:\\Dev\\glad\\src\\glad.c
+	g++ $(RELEASE_FLAGS) -c C:\Dev\glad\src\glad.c -IC:\Dev\glad\include -o $@
+
+$(TARGET_DEBUG): $(DEBUG_OBJ)
+	$(CXX) $(DEBUG_FLAGS) $^ -o $@ $(INC) $(LIBS) 
+
+$(DEBUG_OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
+	$(CXX) $(DEBUG_FLAGS) -c $< -o $@
+
+$(DEBUG_OBJ_DIR)/main.o: $(SRC_DIR)/main.cpp
+	$(CXX) $(DEBUG_FLAGS) $(INC) -c $< -o $@
+
+$(DEBUG_OBJ_DIR)/glad.o: C:\\Dev\\glad\\src\\glad.c
+	g++ $(DEBUG_FLAGS) -c C:\Dev\glad\src\glad.c -IC:\Dev\glad\include -o $@
 
 clean:
-	del Game4.exe
-	del .\obj\*.o
+	del .\output\*.exe
+	del .\obj\release\*.o
+	del .\obj\debug\*.o
 
 test:
 	g++ -std=c++17 main.cpp ./obj/glad.o $(INC) $(LIBS)

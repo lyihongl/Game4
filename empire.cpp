@@ -1,6 +1,6 @@
 #include "inc/empire.hpp"
 #include "inc/economy.hpp"
-#include "inc/constants.hpp"
+// #include "inc/constants.hpp"
 
 #include <iostream>
 #include <vector>
@@ -12,12 +12,34 @@ Empire::Empire() : foodOverhead(50) {
 }
 
 void Empire::simulate(unsigned long long ticks) {
-    std::vector<Constants::ResourceIndex> assignedJobs;
-    if (economy->food < foodOverhead * population) {
+    // std::vector<Constants::ResourceIndex> assignedJobs;
+    std::unordered_map<std::string, uint32_t> peopleAllocation;
+
+    if (economy->resources["food"] < foodOverhead * population) {
         uint32_t foodPeople = population * 0.8;
         uint32_t rest = population - foodPeople;
+        peopleAllocation["food"] = foodPeople;
+        while (rest > 0) {
+            for (auto &it : economy->resources) {
+                if (it.first == "food") continue;
+
+                peopleAllocation[it.first]++;
+                rest--;
+                if (rest == 0) break;
+            }
+            if (rest == 0) break;
+        }
+    } else {
+        uint32_t rest = population;
+        while (rest > 0) {
+            for (auto &it : economy->resources) {
+                peopleAllocation[it.first]++;
+                rest--;
+                if (rest == 0) break;
+            }
+            if (rest == 0) break;
+        }
     }
-    std::unordered_map<Resource, uint32_t> peopleAllocation;
 
     if (ticks % 240 == 0) {
         economy->produce(peopleAllocation);

@@ -4,9 +4,13 @@
 #include <iostream>
 #include <vector>
 
+using namespace Constants;
+
 Economy::Economy() {
-    wood = 0;
-    food = 10;
+    for(auto &it : ResourcesMetadata) {
+        resources[it.getName()] = 0;
+    }
+    resources[getResourceName(ResourceIndex::WOOD)] = 20;
 }
 
 Economy::Economy(Economy &e){
@@ -23,12 +27,16 @@ Economy Economy::operator=(Economy &e){
 
 Economy::~Economy(){}
 
-void Economy::produce(std::unordered_map<Resource, uint32_t> &people) {
+void Economy::produce(std::unordered_map<std::string, uint32_t> &people) {
+    for(auto &it : people) {
+        resources[it.first] += it.second*2;
+    }
 }
 
 void Economy::print() const {
     std::cout<<"== economy ==\n";
-    std::cout<<"wood: "<<wood<<"\n";
-    std::cout<<"food: "<<food<<"\n";
+    for(const auto &it : resources) {
+        std::cout<<it.first<<": "<<it.second<<"\n";
+    }
     std::cout<<std::endl;
 }

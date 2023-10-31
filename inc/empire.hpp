@@ -3,7 +3,7 @@
 #include "economy.hpp"
 
 class Empire{
-    int population;
+    int32_t population;
     double money;
 
     const unsigned int foodOverhead;

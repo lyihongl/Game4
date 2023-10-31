@@ -5,14 +5,17 @@
 #include <array>
 
 namespace Constants {
-enum class ResourceIndex : string { WOOD = "wood", FOOD = "food" };
-const std::array<Resource, 2> ResourcesMetadata = {
-    Resource{"wood"},
-    Resource{"food"},
-};
+    enum class ResourceIndex : int { WOOD = 0, FOOD = 1 };
+    const std::array<Resource, 2> ResourcesMetadata = {
+        Resource{"wood"},
+        Resource{"food"},
+    };
 
-const Resource &getResource(ResourceIndex i) {
-  ResourceIndex::WOOD;
-  return ResourcesMetadata[static_cast<int>(i)];
-}
+    const Resource &getResource(ResourceIndex i) {
+        return ResourcesMetadata[static_cast<int>(i)];
+    }
+
+    const std::string getResourceName(ResourceIndex i) {
+        return ResourcesMetadata[static_cast<int>(i)].getName();
+    }
 }; // namespace Constants
