@@ -5,6 +5,8 @@
 class Empire{
     int population;
     double money;
+
+    const unsigned int foodOverhead;
     std::unique_ptr<Economy> economy;
 
     public:
@@ -13,4 +15,5 @@ class Empire{
     Empire operator=(const Empire&) = delete;
     Empire(Empire&&);
     ~Empire();
+    void simulate(unsigned long long);
 };

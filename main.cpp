@@ -11,6 +11,9 @@
 #include <gtc/type_ptr.hpp>
 #include <gtx/string_cast.hpp>
 
+#include "inc/empire.hpp"
+
+
 const int SCREEN_FULLSCREEN = 0;
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 720;
@@ -81,8 +84,10 @@ void init_screen(const char *caption) {
 }
 
 int main(int argc, char **argv) {
+    // std::cout<<Constants::getResource(Constants::ResourceIndex::WOOD).getName()<<std::endl;
 
-    std::cout<<std::endl;
+    Empire rome{};
+    
     init_screen("OpenGL 4.3");
     SDL_Event event;
     bool quit = false;
@@ -101,6 +106,7 @@ int main(int argc, char **argv) {
 
     glm::vec2 start = glm::vec2(10, 10);
     glm::vec2 end = glm::vec2(10, 40);
+    unsigned long long ticks = 0;
 
     while (!quit) {
         Uint32 now = SDL_GetTicks();
@@ -133,6 +139,8 @@ int main(int argc, char **argv) {
             glClear(GL_COLOR_BUFFER_BIT);
 
             last_game_step = now;
+            ticks++;
+            rome.simulate(ticks);
 
             // RenderGame();
         } else {
