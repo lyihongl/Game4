@@ -9,8 +9,10 @@
 class Render {
     uint32_t VBO, VAO;
     glm::mat4 MVP;
+    uint32_t screen_w, screen_h;
+    glm::mat4 view;
     public:
-    Render();
+    Render(uint32_t, uint32_t);
     ~Render();
     Render(Render &) = delete;
     Render(Render &&) = delete;

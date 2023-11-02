@@ -15,13 +15,13 @@
 #include <glm/gtx/string_cast.hpp>
 
 const int SCREEN_FULLSCREEN = 0;
-const int SCREEN_WIDTH = 1280;
-const int SCREEN_HEIGHT = 720;
+const uint32_t SCREEN_WIDTH = 1280;
+const uint32_t SCREEN_HEIGHT = 720;
 const float VP_RATIO = (float)SCREEN_WIDTH / SCREEN_HEIGHT;
 SDL_Window *window = NULL;
 SDL_GLContext maincontext;
 
-uint32_t frame_count = 0;
+// uint32_t frame_count = 0;
 
 static void sdl_die(const char *message) {
     fprintf(stderr, "%s: %s\n", message, SDL_GetError());
@@ -109,9 +109,11 @@ int main(int argc, char **argv) {
     unsigned long long ticks = 0;
 
     Empire rome{};
-    Render render{};
+    Render render{SCREEN_WIDTH, SCREEN_HEIGHT};
     std::vector<Quad> quads;
-    quads.push_back(Quad{0.1, 0.1, 0, 0});
+    quads.push_back(Quad{50, 80, 16, 16, 0});
+    quads.push_back(Quad{30, 30, 100, 30, 0});
+    quads.push_back(Quad{30, 30, 30, 100, 0});
     Shader s{"./shaders/triagShader.vert", "./shaders/triagShader.frag"};
 
     while (!quit) {
@@ -147,6 +149,9 @@ int main(int argc, char **argv) {
             last_game_step = now;
             ticks++;
             rome.simulate(ticks);
+            for(Quad &q : quads) {
+                q.rad+=0.005;
+            }
             render.renderQuad(quads, s);
 
             // RenderGame();
