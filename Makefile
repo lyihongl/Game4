@@ -1,6 +1,6 @@
 LIBS = -w -lmingw32 -lSDL2main -lSDL2 -DLOG_USE_COLOR -lgdi32 -lopengl32 \
 			-luser32 -lkernel32 -lglu32 
-INC = 	-IC:\Dev\glm\glm -IC:\Dev\glad\include \
+INC = 	-IC:\Dev\glm -IC:\Dev\glad\include \
 		-IC:\mingw64\x86_64-w64-mingw32\include -LC:\mingw64\x86_64-w64-mingw32\lib \
 		-IC:\Dev\SDL2-2.0.10\x86_64-w64-mingw32\include \
 		-LC:\Dev\SDL2-2.0.10\x86_64-w64-mingw32\lib \
@@ -32,10 +32,6 @@ OUT_DIR = ./output
 TARGET = $(OUT_DIR)/Game4.exe
 TARGET_DEBUG = $(OUT_DIR)/Game4Debug.exe
 
-
-
-
-
 all: $(TARGET)
 
 debug: $(TARGET_DEBUG)
@@ -49,8 +45,12 @@ $(RELEASE_OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 $(RELEASE_OBJ_DIR)/main.o: $(SRC_DIR)/main.cpp
 	$(CXX) $(RELEASE_FLAGS) $(INC) -c $< -o $@
 
+$(RELEASE_OBJ_DIR)/render.o: $(SRC_DIR)/render.cpp
+	$(CXX) $(RELEASE_FLAGS) $(INC) -c $< -o $@
+
 $(RELEASE_OBJ_DIR)/glad.o: C:\\Dev\\glad\\src\\glad.c
 	g++ $(RELEASE_FLAGS) -c C:\Dev\glad\src\glad.c -IC:\Dev\glad\include -o $@
+
 
 $(TARGET_DEBUG): $(DEBUG_OBJ)
 	$(CXX) $(DEBUG_FLAGS) $^ -o $@ $(INC) $(LIBS) 

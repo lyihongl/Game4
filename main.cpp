@@ -1,3 +1,6 @@
+#include "inc/empire.hpp"
+#include "inc/render.hpp"
+
 #include <cstdio>
 #include <cstdlib>
 #include <shaders.hpp>
@@ -6,13 +9,10 @@
 #define GLM_FORCE_RADIANS 1
 #include <SDL2/SDL.h>
 #include <glad/glad.h>
-#include <glm.hpp>
-#include <gtc/matrix_transform.hpp>
-#include <gtc/type_ptr.hpp>
-#include <gtx/string_cast.hpp>
-
-#include "inc/empire.hpp"
-
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/string_cast.hpp>
 
 const int SCREEN_FULLSCREEN = 0;
 const int SCREEN_WIDTH = 1280;
@@ -86,9 +86,9 @@ void init_screen(const char *caption) {
 int main(int argc, char **argv) {
     // std::cout<<Constants::getResource(Constants::ResourceIndex::WOOD).getName()<<std::endl;
 
-    Empire rome{};
-    
+
     init_screen("OpenGL 4.3");
+
     SDL_Event event;
     bool quit = false;
     bool be_nice_and_dont_burn_the_cpu = true;
@@ -107,6 +107,12 @@ int main(int argc, char **argv) {
     glm::vec2 start = glm::vec2(10, 10);
     glm::vec2 end = glm::vec2(10, 40);
     unsigned long long ticks = 0;
+
+    Empire rome{};
+    Render render{};
+    std::vector<Quad> quads;
+    quads.push_back(Quad{0.1, 0.1, 0, 0});
+    Shader s{"./shaders/triagShader.vert", "./shaders/triagShader.frag"};
 
     while (!quit) {
         Uint32 now = SDL_GetTicks();
@@ -141,6 +147,7 @@ int main(int argc, char **argv) {
             last_game_step = now;
             ticks++;
             rome.simulate(ticks);
+            render.renderQuad(quads, s);
 
             // RenderGame();
         } else {
