@@ -61,6 +61,9 @@ $(DEBUG_OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 $(DEBUG_OBJ_DIR)/main.o: $(SRC_DIR)/main.cpp
 	$(CXX) $(DEBUG_FLAGS) $(INC) -c $< -o $@
 
+$(DEBUG_OBJ_DIR)/render.o: $(SRC_DIR)/render.cpp
+	$(CXX) $(RELEASE_FLAGS) $(INC) -c $< -o $@
+
 $(DEBUG_OBJ_DIR)/glad.o: C:\\Dev\\glad\\src\\glad.c
 	g++ $(DEBUG_FLAGS) -c C:\Dev\glad\src\glad.c -IC:\Dev\glad\include -o $@
 

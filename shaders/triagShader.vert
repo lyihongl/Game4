@@ -16,7 +16,7 @@ void main() {
     // color_ = vec3(2*(int(aPos.x/2)*2)/w-1, 2*(int(aPos.y/2)*2)/h - 1, 0);
     float x = 2*(aPos.x - x_center); 
     float y = 2*(aPos.y - y_center);
-    gl_Position = vec4((x*cos(rad) - y*sin(rad) + 2*x_center)/w-1, (x*sin(rad) + y*cos(rad) + 2*y_center)/h-1, 0.0, 1.0);
+    gl_Position = vec4((x*cos(rad) - y*sin(rad) + 2*x_center)/w-1, 1 - (x*sin(rad) + y*cos(rad) + 2*y_center)/h, 0.0, 1.0);
     // gl_Position = vec4(x*cos(rad) - y*sin(rad) + 2*x_center/w, y*sin(rad) + y*cos(rad) + 2*y_center/h, 0.0, 1.0);
     // gl_Position = vec4(x*cos(rad) - y*sin(rad), y, 0.0, 1.0);
     color_ = vec3(0.5, 0, 0);
