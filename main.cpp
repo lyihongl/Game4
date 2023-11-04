@@ -46,7 +46,7 @@ void init_screen(const char *caption) {
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 2);
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
 
     // Create the window
     if (SCREEN_FULLSCREEN) {
@@ -75,6 +75,8 @@ void init_screen(const char *caption) {
 
     // Disable depth test and face culling.
     // glShadeModel(GL_FLAT)
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
     glEnable(GL_MULTISAMPLE);
@@ -95,8 +97,6 @@ void bfs(std::vector<std::vector<int>> &dist,
 
     std::queue<std::pair<int, int>> work;
     work.push({startX, startY});
-    // dist[startY][startX] = 0;
-    // visited[startY][startX] = 1;
 
     // clang-format off
     std::vector<std::pair<int, int>> dirs = {
