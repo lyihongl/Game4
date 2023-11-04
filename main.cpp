@@ -7,6 +7,7 @@
 #include <vector>
 #include <queue>
 #include <windows.h>
+#include <cmath>
 
 #define GLM_FORCE_RADIANS 1
 #include <SDL2/SDL.h>
@@ -85,7 +86,7 @@ void init_screen(const char *caption) {
     glClearColor(0.0f, 0.5f, 1.0f, 0.0f);
 }
 
-void bfs(std::vector<std::vector<unsigned int>> &dist,
+void bfs(std::vector<std::vector<int>> &dist,
          const std::vector<std::vector<unsigned int>> &blocked, int startX,
          int startY) {
 
@@ -97,12 +98,18 @@ void bfs(std::vector<std::vector<unsigned int>> &dist,
     // dist[startY][startX] = 0;
     // visited[startY][startX] = 1;
 
+    // clang-format off
     std::vector<std::pair<int, int>> dirs = {
-        {0, 1},
-        {0, -1},
-        {-1, 0},
-        {1, 0},
+        {0, 1}, 
+        {0, -1}, 
+        {1, 1}, 
+        {-1, -1}, 
+        {-1, 0}, 
+        {1, 0}, 
+        {-1, 1}, 
+        {1, -1}
     };
+    // clang-format on
 
     unsigned int path_length = 0;
     while (!work.empty()) {
@@ -153,16 +160,44 @@ int main(int argc, char **argv) {
     Empire rome{};
     Render render{SCREEN_WIDTH, SCREEN_HEIGHT};
     std::vector<Quad> quads;
-    quads.push_back(Quad{50, 80, 16, 16, 0});
-    quads.push_back(Quad{30, 30, 100, 30, 0});
-    quads.push_back(Quad{30, 30, 30, 100, 0});
+    quads.push_back(Quad{50, 50, 100, 100, 0});
+    // quads.push_back(Quad{30, 30, 100, 30, 0});
+    // quads.push_back(Quad{30, 30, 30, 100, 0});
     Shader s{"./shaders/triagShader.vert", "./shaders/triagShader.frag"};
+    Shader field{"./shaders/triagShader.vert", "./shaders/fieldLines.frag"};
 
-    std::vector<std::vector<unsigned int>> grid1(
-        36, std::vector<unsigned int>(64, 0));
+    std::vector<std::vector<int>> grid1(36, std::vector<int>(64, 0));
 
     std::vector<std::vector<unsigned int>> blocked(
         36, std::vector<unsigned int>(64, 0));
+    blocked[0][20] = 1;
+    blocked[1][20] = 1;
+    blocked[2][20] = 1;
+    blocked[3][20] = 1;
+    blocked[4][20] = 1;
+    blocked[0][21] = 1;
+    blocked[1][21] = 1;
+    blocked[2][21] = 1;
+    blocked[3][21] = 1;
+    blocked[4][21] = 1;
+    std::vector<Quad> quads2;
+    for (int i = 0; i < blocked.size(); i++) {
+        for (int j = 0; j < blocked[0].size(); j++) {
+            if (blocked[i][j]) {
+                quads2.push_back(Quad{20, 20, static_cast<float>(j * 20 + 10),
+                                      static_cast<float>(i * 20 + 10), 0});
+            }
+        }
+    }
+    std::vector<Quad> quads3;
+    for (int i = 0; i < blocked.size(); i++) {
+        for (int j = 0; j < blocked[0].size(); j++) {
+            if (!blocked[i][j]) {
+                quads3.push_back(Quad{18, 2, static_cast<float>(j * 20 + 10),
+                                      static_cast<float>(i * 20 + 9), 0});
+            }
+        }
+    }
 
     std::vector<std::vector<std::pair<float, float>>> grid2(
         36, std::vector<std::pair<float, float>>(64, {0.0f, 0.0f}));
@@ -199,12 +234,12 @@ int main(int argc, char **argv) {
             }
             glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
-            std::cout << "fps: " << (1000.f / delta_time) << "\n";
+            // std::cout << "fps: " << (1000.f / delta_time) << "\n";
             ticks++;
             SDL_GetMouseState(&mX, &mY);
             unsigned int gridX = mX / 20;
             unsigned int gridY = mY / 20;
-            if (ticks % 20 == 0) {
+            if (ticks % 5) {
                 // std::cout<<gridX<<": "<<gridY<<std::endl;
                 bfs(grid1, blocked, gridX, gridY);
                 // for (const auto &row : grid1) {
@@ -215,12 +250,58 @@ int main(int argc, char **argv) {
                 //     std::cout << "\n";
                 // }
                 // std::cout << std::endl;
+                for (int i = 1; i < grid1.size() - 1; i++) {
+                    for (int j = 1; j < grid1[0].size() - 1; j++) {
+                        float diag_1 = std::sqrt(
+                            abs(grid1[i - 1][j - 1] - grid1[i + 1][j + 1]));
+                        float diag_2 = std::sqrt(
+                            abs(grid1[i - 1][j + 1] - grid1[i + 1][j - 1]));
+                        float x_comp_1 =
+                            (grid1[i - 1][j - 1] > grid1[i + 1][j + 1])
+                                ? diag_1
+                                : -diag_1;
+                        float x_comp_2 =
+                            (grid1[i - 1][j + 1] > grid1[i + 1][j - 1])
+                                ? -diag_2
+                                : diag_2;
+                        float y_comp_1 =
+                            (grid1[i - 1][j - 1] > grid1[i + 1][j + 1])
+                                ? diag_1
+                                : -diag_1;
+                        float y_comp_2 =
+                            (grid1[i - 1][j + 1] > grid1[i + 1][j - 1])
+                                ? diag_2
+                                : -diag_2;
+                        grid2[i][j] = {static_cast<float>(grid1[i][j - 1] -
+                                                          grid1[i][j + 1]) +
+                                           x_comp_1 + x_comp_2,
+                                       static_cast<float>(grid1[i - 1][j] -
+                                                          grid1[i + 1][j]) +
+                                           y_comp_1 + y_comp_2};
+                    }
+                }
             }
             // rome.simulate(ticks);
-            // for (Quad &q : quads) {
-            //     q.rad += 0.005;
-            // }
-            // render.renderQuad(quads, s);
+            for (Quad &q : quads) {
+                // q.rad += 0.005;
+                uint32_t quad_grid_x = q.x / 20;
+                uint32_t quad_grid_y = q.y / 20;
+
+                const auto &[ax, ay] = grid2[quad_grid_y][quad_grid_x];
+                q.x += ax * 0.3;
+                q.y += ay * 0.3;
+            }
+            for (Quad &q : quads3) {
+                // q.rad += 0.005;
+                uint32_t quad_grid_x = q.x / 20;
+                uint32_t quad_grid_y = q.y / 20;
+
+                const auto &[ax, ay] = grid2[quad_grid_y][quad_grid_x];
+                q.rad = std::atan2(ay, ax);
+            }
+            render.renderQuad(quads, s);
+            render.renderQuad(quads2, s);
+            render.renderQuad(quads3, field);
 
             // RenderGame();
 
