@@ -132,7 +132,7 @@ int main(int argc, char **argv) {
             }
         }
 
-        if (last_game_step < now) {
+        if (last_game_step + 16 < now) {
             SDL_GL_SwapWindow(window);
 
             Uint32 delta_time = now - last_game_step;
@@ -144,12 +144,12 @@ int main(int argc, char **argv) {
             glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
 
-            last_game_step = now;
             ticks++;
             rome.simulate(ticks);
             render.renderQuad(quads, s);
 
             // RenderGame();
+            last_game_step = now;
         } else {
             // we're too fast, wait a bit.
             if (be_nice_and_dont_burn_the_cpu) {
